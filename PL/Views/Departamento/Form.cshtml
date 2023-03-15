@@ -1,0 +1,51 @@
+﻿@model ML.Departamento
+
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>REGISTRO DE DEPARTAMENTOS</h2>
+
+<div class="row">
+    <div class="col-12">
+        <h5>Ingrese los datos del Departamento:</h5>
+    </div>
+</div>
+</hr>
+
+@using (Html.BeginForm("Form", "Departamento", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <div class="col-md-1" style="display: none;">
+            @Html.TextBoxFor(model => model.idDepartamento, new { @class = "hidden form-control", autocomplete = "off" })
+        </div>
+
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.nombre)
+            <div class="input-group mb-2">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.nombre, new { @class = "form-control", @placeholder = "Ejemp: Ariel4502", autocomplete = "off" })
+                @Html.ValidationMessageFor(model => model.nombre, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.Area)
+                @Html.DropDownListFor(model => model.Area.idArea, new SelectList(Model.Area.Areas, "idArea", "nombre"), "Seleccione un Area", new { @class = "form-control", @id = "ddlArea" })
+            </div>
+
+        </div>
+
+        <div class="glyphicon-up">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <input type="submit" value="Guardar" class="btn btn-success" />
+                    @Html.ActionLink("Regresar", "GetAll", "Departamento", htmlAttributes: new { @class = "btn btn-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+}

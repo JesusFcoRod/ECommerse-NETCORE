@@ -1,0 +1,186 @@
+﻿@model ML.Usuario
+
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>FILTRAR USUARIOS</h1>
+
+@using (Html.BeginForm("GetAll", "Usuario", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+
+        <div class="col-md-2">
+            @Html.LabelFor(model => model.nombre, "Nombre(s):")
+            <div class="input-group mb-2">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.nombre, new { @class = "form-control"})
+                @Html.ValidationMessageFor(model => model.nombre, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            @Html.LabelFor(model => model.apellidoPaterno, "Apellido Paterno:")
+            <div class="input-group mb-2">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.apellidoPaterno, new { @class = "form-control"})
+                @Html.ValidationMessageFor(model => model.apellidoPaterno, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            @Html.LabelFor(model => model.apellidoMaterno, "Apellido Materno: ")
+            <div class="input-group mb-2">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.apellidoMaterno, new { @class = "form-control"})
+                @Html.ValidationMessageFor(model => model.apellidoMaterno, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="glyphicon-up">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <input type="submit" value="Filtrar" class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@*TABLA CON TODOS LOS REGISTROS*@
+
+<h1>USUARIOS REGISTRADOS</h1>
+
+<div class="container">
+    <div class=row>
+        <div class="text-center">
+            <h2></h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <hr />
+        </div>
+    </div>
+</div>
+
+<div style="float:right;">
+    @Html.ActionLink("Agregar", "Form", "Usuario", htmlAttributes: new { @class = "btn btn-success" })
+</div>
+
+<br />
+<table class="table table-bordered table-responsive table-hover" id="table_usuarios">
+    <thead>
+        <tr class="table-secondary">
+            <td>Editar</td>
+            <td style="display :none;">id</td>
+            <td>UserName</td>
+            <td>Nombre Completo</td>
+            <td>Datos Generales</td>
+            <td>Rol</td>
+            <td>Direccion</td>
+            <td>Contacto </td>
+            <td>Estatus</td>
+            <td>Imagen</td>
+            <td>Eliminar</td>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ML.Usuario usuario in Model.Usuarios)
+        {
+            <tr>
+                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-warning glyphicon  glyphicon glyphicon-cog" href="@Url.Action("Form", "Usuario", new { IdUsuario = usuario.idUsuario})"><i class="bi bi-pencil-square" style="color: ivory"></i></a></td>
+                <td style="display :none;">@usuario.idUsuario </td>
+                <td>@usuario.userName</td>
+                <td>@usuario.nombreCompleto</td>
+                <td>@usuario.DatosGenerales</td>
+                <td>@usuario.Rol.descripcion</td>
+                <td>@usuario.direccionCompleta</td>
+                <td>@usuario.contacto</td>
+                @* PARA ESTATUS DE USUARIO*@
+                <td style="text-align:center; vertical-align: middle">
+                    @if (usuario.Status == true)
+                    {
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked onchange="ChangeStatus(@usuario.idUsuario,this)">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onchange="ChangeStatus(@usuario.idUsuario,this)">
+                        </div>
+                    }
+                </td>
+
+                @*PARA IMAGEN DE USUARIO*@
+                <td>
+                    @if (usuario.Imagen == null || usuario.Imagen == "")
+                    {
+                        <img id="Img" src="~/Imagenes/Imagen2.jpg" style="width:150px ; height:150px" />
+
+                    }
+                    else
+                    {
+                        <img id="Img" src="data:image/*;base64,@usuario.Imagen" style="width:150px ; height:150px" />
+                    }
+                </td>
+
+                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Usuario", new { idUsuario = usuario.idUsuario})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><i class="bi bi-eraser-fill" style="color: mintcream"></i></a></td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@*PAGINACION*@
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.material.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#table_usuarios').DataTable({
+                searching: false,
+                "lengthMenu": [[1, 10, 15, 20, -1], [5, 10, 15, 20, "All"]],
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell',
+                    },
+                ],
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
+                },
+            });
+        });
+
+        //AJAX PARA SWITCH
+        function ChangeStatus(idUsuario,e) {
+            var status = e.checked
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CambiarStatus")',
+                dataType:'json',
+                data: {idUsuario, status},
+                success: {                  },
+                error: function(ex){
+                    alert('Failed'+ ex);
+                }
+            });
+        }
+
+
+    </script>
+}

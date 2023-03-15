@@ -1,0 +1,89 @@
+﻿@model ML.Producto
+@{
+    ViewData["Title"] = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/Venta.css" />
+</head>
+
+<h1>TODOS LOS PRODUCTOS</h1>
+
+<div class="container">
+    <div class=row>
+        <div class="text-center">
+            <h2></h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h5>"</h5>
+            <hr />
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginForm("ProductoGetAll", "Venta", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+
+        <div class="form-group">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.Departamento)
+                @Html.DropDownListFor(model => model.Departamento.idDepartamento, new SelectList(Model.Departamento.Departamentos, "idDepartamento", "nombre"), "Seleccione un Departamento", new { @class = "form-control", @id = "ddlDepartamento" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="glyphicon-up">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <input type="submit" value="Filtrar" class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    }
+
+    @foreach (ML.Producto producto in Model.Productos)
+    {
+        <div class="right">
+            <div class="container-fluid bg-trasparent my-2 p-2" style="position: center;">
+                <div class="row row-cols-1 row-cols-xs-2 row-cols-sm-2 row-cols-lg-4 g-3">
+                    <div class="col" style="height: 28rem; width: 16rem">
+                        <div class="card h-100 shadow-sm" style="height:15rem">
+
+                            <img src=@producto.Imagen class="card-img-top" alt="..."> <div class="card-body">
+
+                                @if (producto.Imagen == null || producto.Imagen == "")
+                                {
+                                    <img id="Img" src="~/Imagenes/ProductoND.png" style="width:150px ; height:150px" />
+
+                                }
+                                else
+                                {
+                                    <img id="Img" src="data:image/*;base64,@producto.Imagen" style="width:150px ; height:150px" />
+                                }
+
+                                <div class="clearfix mb-3">
+                                    <span class="float-start badge rounded-pill bg-primary">@producto.Nombre</span>
+                                    <span class="float-end price-hp">@producto.PrecioUnitario</span>
+                                </div>
+                                <h5 class="card-title">@producto.Descripcion</h5>
+                                <div class="text-center my-4">
+                                    <a href="@Url.Action("CartPost", "Venta", new {idProducto = producto.IdProducto, Nombre = producto.Nombre, PrecioUnitario = producto.PrecioUnitario,Stock = producto.Stock, Descripcion = producto.Descripcion})" class="btn btn-success">Añadir <i class="bi bi-cart3" style="color: khaki"></i> </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
