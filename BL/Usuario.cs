@@ -39,14 +39,14 @@ namespace BL
 
         }
 
-        public static ML.Result UsuarioUpdate(ML.Usuario usuario)
+        public static ML.Result UsuarioUpdate(ML.Usuario usuario, int idUsuario)
         {
             ML.Result resultUpdate = new Result();
             try
             {
                 using (DL.JrodriguezProgramacionNcapasContext contex = new DL.JrodriguezProgramacionNcapasContext())
                 {
-                    var query = contex.Database.ExecuteSqlRaw($"UsuarioUpdate '{usuario.userName}', '{usuario.nombre}','{usuario.apellidoPaterno}', '{usuario.apellidoMaterno}','{usuario.email}', '{usuario.password}', '{usuario.fechaNacimiento}', '{usuario.sexo.ToString()}', '{usuario.telefono}', '{usuario.celular}', '{usuario.curp}','{usuario.Rol.idRol}',{usuario.idUsuario},'{usuario.Imagen}','{usuario.Direccion.calle}','{usuario.Direccion.numeroInterio}','{usuario.Direccion.numeroExterior}', '{usuario.Direccion.Colonia.idColonia}'");
+                    var query = contex.Database.ExecuteSqlRaw($"UsuarioUpdate '{usuario.userName}', '{usuario.nombre}','{usuario.apellidoPaterno}', '{usuario.apellidoMaterno}','{usuario.email}', '{usuario.password}', '{usuario.fechaNacimiento}', '{usuario.sexo.ToString()}', '{usuario.telefono}', '{usuario.celular}', '{usuario.curp}','{usuario.Rol.idRol}',{idUsuario},'{usuario.Imagen}','{usuario.Direccion.calle}','{usuario.Direccion.numeroInterio}','{usuario.Direccion.numeroExterior}', '{usuario.Direccion.Colonia.idColonia}'");
 
                     if (query > 0)
                     {
@@ -68,7 +68,7 @@ namespace BL
 
         }
 
-        public static ML.Result UsuarioDelete(ML.Usuario usuario)
+        public static ML.Result UsuarioDelete(int idUsuario)
         {
             ML.Result resultDelete = new ML.Result();
 
@@ -76,7 +76,7 @@ namespace BL
             {
                 using (DL.JrodriguezProgramacionNcapasContext contex = new DL.JrodriguezProgramacionNcapasContext())
                 {
-                    var query = contex.Database.ExecuteSqlRaw($"[UsuarioUDelete] {usuario.idUsuario}");
+                    var query = contex.Database.ExecuteSqlRaw($"[UsuarioUDelete] {idUsuario}");
 
                     if (query > 0)
                     {
@@ -167,14 +167,14 @@ namespace BL
             return resultGetlALL;
         }
 
-        public static ML.Result UsuarioGetAllById(ML.Usuario usuario)
+        public static ML.Result UsuarioGetAllById(int idUsuario)
         {
             ML.Result resultById = new ML.Result();
             try
             {
                 using (DL.JrodriguezProgramacionNcapasContext contex = new DL.JrodriguezProgramacionNcapasContext())
                 {
-                    var query = contex.Usuarios.FromSqlRaw($"UsuarioGetById {usuario.idUsuario}").AsEnumerable().FirstOrDefault();
+                    var query = contex.Usuarios.FromSqlRaw($"UsuarioGetById {idUsuario}").AsEnumerable().FirstOrDefault();
                     ML.Usuario usuarioGetId = new ML.Usuario();
 
                     usuarioGetId.idUsuario = query.IdUsuario;

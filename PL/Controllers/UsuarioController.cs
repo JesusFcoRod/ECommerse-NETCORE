@@ -106,7 +106,42 @@ namespace PL.Controllers
             if (idUsuario != null)
             {
                 usuario.idUsuario = idUsuario.Value;
-                ML.Result result = BL.Usuario.UsuarioGetAllById(usuario);
+                //ML.Result result = BL.Usuario.UsuarioGetAllById(usuario);
+
+                ML.Result result = new ML.Result();
+
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+
+                        string urlApi = _configuration["urlApi"];
+                        client.BaseAddress = new Uri(urlApi);
+
+                        var responseTask = client.GetAsync("Usuario/GetById/" + idUsuario);
+                        responseTask.Wait();
+
+                        var resultServicio = responseTask.Result;
+
+                        if (resultServicio.IsSuccessStatusCode)
+                        {
+                            var readTask = resultServicio.Content.ReadAsAsync<ML.Result>();
+                            readTask.Wait();
+
+                            string usuarioCast = readTask.Result.Object.ToString();
+
+                            ML.Usuario resultItem = Newtonsoft.Json.JsonConvert.DeserializeObject<ML.Usuario>(usuarioCast);
+                            result.Object = resultItem;
+                            result.Correct = true;
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    result.Correct = false;
+                    result.ErrorMessage = ex.Message;
+                }
 
                 if (result.Correct)
                 {
@@ -141,9 +176,8 @@ namespace PL.Controllers
         }
 
         [HttpPost] //Decorador que se utiliza cuando se quiere enviar informacion a la base desde el formulario
-        public ActionResult Form(ML.Usuario usuario)
+        public ActionResult Form(ML.Usuario usuario, int idUsuario)
         {
-
             //PARA IMAGEN
             IFormFile file = Request.Form.Files["ImgUsuario"];
 
@@ -154,36 +188,88 @@ namespace PL.Controllers
                 usuario.Imagen = Convert.ToBase64String(imagen);
             }
 
-            ML.Result result = new ML.Result();
+            //ML.Result result = new ML.Result();
+
+            //----------- PARA WEB SERVICE API ---------------------------------------------
+
+            using (var client = new HttpClient())
+            {
+                if (usuario.idUsuario == 0)
+                {
+
+                    client.BaseAddress = new Uri(_configuration["urlApi"]);
+
+                    //HTTP POST
+                    var postTask = client.PostAsJsonAsync<ML.Usuario>("Usuario/Add", usuario);
+                    postTask.Wait();
+
+                    var result = postTask.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        ViewBag.Mensaje = "Se ha registrado el usuario";
+                        return PartialView("Modal");
+                    }
+                    else
+                    {
+                        ViewBag.Mensaje = "No se ha registrado el usuario";
+                        return PartialView("Modal");
+                    }
+
+                }
+                else
+                {
+                    client.BaseAddress = new Uri(_configuration["urlApi"]);
+
+                    //HTTP POST
+                    var postTask = client.PostAsJsonAsync<ML.Usuario>("Usuario/Update/"+ idUsuario,usuario);
+                    postTask.Wait();
+
+                    var result = postTask.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        ViewBag.Mensaje = "Se ha actualizado el usuario";
+                        return PartialView("Modal");
+                    }
+                    else
+                    {
+                        ViewBag.Mensaje = "No se ha registrado el usuario";
+                        return PartialView("Modal");
+                    }
+
+                }
+
+            }
+
+            //------------------------------------------------------------------------------
 
             //if (ModelState.IsValid)
             //{
 
-            //---------------------------------------------------------------------------------------
-            if (usuario.idUsuario > 0)
-            {
-                //UPDATE
-                result = BL.Usuario.UsuarioUpdate(usuario);
-                ViewBag.Message = "Se ha actualizado el registro";
-            }
-            else
-            {
-                //ADD                
-                result = BL.Usuario.UsuarioAdd(usuario);
-                ViewBag.Message = "Se ha agregadao el nuevo el registro";
+            //--------------------------------- PARA USAR BL ---------------------------------------------------
+            //if (usuario.idUsuario > 0)
+            //{
+            //    //UPDATE
+            //    result = BL.Usuario.UsuarioUpdate(usuario);
+            //    ViewBag.Message = "Se ha actualizado el registro";
+            //}
+            //else
+            //{
+            //    //ADD                
+            //    result = BL.Usuario.UsuarioAdd(usuario);
+            //    ViewBag.Message = "Se ha agregadao el nuevo el registro";
 
-            }
+            //}
 
-            if (result.Correct == true)
-            {
+            //if (result.Correct == true)
+            //{
 
-                return PartialView("Modal");
-            }
-            else
-            {
-                return PartialView("Modal");
-            }
-            //--------------------------------------------------------------------------------------------------
+            //    return PartialView("Modal");
+            //}
+            //else
+            //{
+            //    return PartialView("Modal");
+            //}
+            //------------------------------ VALIDACIONES  ----------------------------------------------
             //}
             //else
             //{
@@ -207,24 +293,51 @@ namespace PL.Controllers
         }
 
         //DELETE
+        [HttpGet]
         public ActionResult Delete(int? idUsuario)
         {
             ML.Usuario usuario = new ML.Usuario();
             usuario.idUsuario = idUsuario.Value;
 
+            //---------------------- DELETE SIN WEB SERVICE ------------------------
+            //ML.Result resultDelete = BL.Usuario.UsuarioDelete(usuario);
 
-            ML.Result resultDelete = BL.Usuario.UsuarioDelete(usuario);
+            //if (resultDelete.Correct == true)
+            //{
+            //    ViewBag.Message = "Se ha eliminado el registro";
+            //    return PartialView("Modal");
+            //}
+            //else
+            //{
+            //    ViewBag.Message = "No se ha eliminado el registro";
+            //    return PartialView("Modal");
+            //}
+            //------------------------------------------------------------------------
 
-            if (resultDelete.Correct == true)
+            //---------------------- DELETE CON WEB SERVICE ------------------------
+            using (var client = new HttpClient())
             {
-                ViewBag.Message = "Se ha eliminado el registro";
-                return PartialView("Modal");
+                client.BaseAddress = new Uri(_configuration["urlApi"]);
+
+                //HTTP POST
+                var postTask = client.GetAsync("Usuario/delete/" + idUsuario);
+                postTask.Wait();
+
+                var result = postTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    ViewBag.Mensaje = "Se ha eliminado el usuario";
+                    return PartialView("Modal");
+                }
+                else
+                {
+                    ViewBag.Mensaje = "No se ha eliminado el usuario";
+                    return PartialView("Modal");
+                }
             }
-            else
-            {
-                ViewBag.Message = "No se ha eliminado el registro";
-                return PartialView("Modal");
-            }
+            //------------------------------------------------------------------------
+
         }
 
         [HttpPost]

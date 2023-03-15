@@ -42,11 +42,11 @@ namespace SL.Controllers
         }
 
         [HttpPost]
-        [Route("api/Usuario/Update")]
-        public ActionResult Update([FromBody] ML.Usuario usuario)
+        [Route("api/Usuario/Update/{idUsuario}")]
+        public ActionResult Update(int idUsuario, [FromBody] ML.Usuario usuario)
         {
 
-            ML.Result result = BL.Usuario.UsuarioUpdate(usuario);
+            ML.Result result = BL.Usuario.UsuarioUpdate(usuario,idUsuario);
 
             if (result.Correct)
             {
@@ -59,11 +59,11 @@ namespace SL.Controllers
         }
 
         [HttpGet]
-        [Route("api/Usuario/Delete")]
-        public ActionResult Delete([FromBody] ML.Usuario usuario)
+        [Route("api/Usuario/Delete/{idUsuario}")]
+        public ActionResult Delete(int idUsuario)
         {
 
-            ML.Result result = BL.Usuario.UsuarioDelete(usuario);
+            ML.Result result = BL.Usuario.UsuarioDelete(idUsuario);
 
             if (result.Correct)
             {
@@ -76,11 +76,11 @@ namespace SL.Controllers
         }
 
         [HttpGet]
-        [Route("api/Usuario/GetById")]
-        public ActionResult GetById([FromBody] ML.Usuario usuario)
+        [Route("api/Usuario/GetById/{idUsuario}")]
+        public ActionResult GetById(int idUsuario)
         {
 
-            ML.Result result = BL.Usuario.UsuarioGetAllById(usuario);
+            ML.Result result = BL.Usuario.UsuarioGetAllById(idUsuario);
 
             if (result.Correct)
             {
