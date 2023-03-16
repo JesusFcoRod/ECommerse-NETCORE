@@ -40,11 +40,11 @@ namespace SL.Controllers
         }
 
         [HttpPost]
-        [Route("api/Departamento/Update")]
-        public ActionResult Update([FromBody] ML.Departamento departamento)
+        [Route("api/Departamento/Update/{idDepartamento}")]
+        public ActionResult Update(int IdDepartamento, [FromBody] ML.Departamento departamento)
         {
 
-            ML.Result result = BL.Departamento.DepartamentoUpdate(departamento);
+            ML.Result result = BL.Departamento.DepartamentoUpdate(departamento,IdDepartamento);
 
             if (result.Correct)
             {
@@ -57,12 +57,12 @@ namespace SL.Controllers
         }
 
         [HttpGet]
-        [Route("api/Departamento/Delete")]
+        [Route("api/Departamento/Delete/{idDepartamento}")]
 
-        public ActionResult Delete([FromBody] ML.Departamento departamento)
+        public ActionResult Delete(int idDepartamento)
         {
 
-            ML.Result result = BL.Departamento.DepartamentoDelete(departamento);
+            ML.Result result = BL.Departamento.DepartamentoDelete(idDepartamento);
 
             if (result.Correct)
             {
@@ -76,12 +76,12 @@ namespace SL.Controllers
 
 
         [HttpGet]
-        [Route("api/Departamento/GetById")]
+        [Route("api/Departamento/GetById/{idDepartamento}")]
 
-        public ActionResult GetById([FromBody] ML.Departamento departamento)
+        public ActionResult GetById(int idDepartamento)
         {
 
-            ML.Result result = BL.Departamento.DepartamentoGetById(departamento);
+            ML.Result result = BL.Departamento.DepartamentoGetById(idDepartamento);
 
             if (result.Correct)
             {

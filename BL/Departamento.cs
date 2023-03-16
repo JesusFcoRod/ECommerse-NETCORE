@@ -36,14 +36,14 @@ namespace BL
             return result;
         }
 
-        public static ML.Result DepartamentoUpdate(ML.Departamento departamento)
+        public static ML.Result DepartamentoUpdate(ML.Departamento departamento, int idDepartamento)
         {
             ML.Result resultUpdate = new ML.Result();
             try
             {
                 using (DL.JrodriguezProgramacionNcapasContext contex = new DL.JrodriguezProgramacionNcapasContext())
                 {
-                    var query = contex.Database.ExecuteSqlRaw($"[DepartamentoUpdate] '{departamento.nombre}',{departamento.Area.idArea},{departamento.idDepartamento}");
+                    var query = contex.Database.ExecuteSqlRaw($"[DepartamentoUpdate] '{departamento.nombre}',{departamento.Area.idArea},{idDepartamento}");
 
                     if (query > 0)
                     {
@@ -64,14 +64,14 @@ namespace BL
             return resultUpdate;
         }
 
-        public static ML.Result DepartamentoDelete(ML.Departamento departamento)
+        public static ML.Result DepartamentoDelete(int idDepartamento)
         {
             ML.Result resultDelete = new ML.Result();
             try
             {
                 using (DL.JrodriguezProgramacionNcapasContext contex = new DL.JrodriguezProgramacionNcapasContext())
                 {
-                    var query = contex.Database.ExecuteSqlRaw($"[DepartamenteDelete] {departamento.idDepartamento}");
+                    var query = contex.Database.ExecuteSqlRaw($"[DepartamenteDelete] {idDepartamento}");
                     if (query > 0)
                     {
                         resultDelete.Correct = true;
@@ -127,7 +127,7 @@ namespace BL
             return resultGetAll;
         }
 
-        public static ML.Result DepartamentoGetById(ML.Departamento departamento)
+        public static ML.Result DepartamentoGetById(int idDepartamento)
         {
             ML.Result resultGI = new ML.Result();
 
@@ -135,7 +135,7 @@ namespace BL
             {
                 using (DL.JrodriguezProgramacionNcapasContext contex = new DL.JrodriguezProgramacionNcapasContext())
                 {
-                    var query = contex.Departamentos.FromSqlRaw($"[DepartamentoGetByID] {departamento.idDepartamento}").AsEnumerable().FirstOrDefault();
+                    var query = contex.Departamentos.FromSqlRaw($"[DepartamentoGetByID] {idDepartamento}").AsEnumerable().FirstOrDefault();
 
                     ML.Departamento departamentoG = new ML.Departamento();
 
